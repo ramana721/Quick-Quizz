@@ -1,4 +1,4 @@
-function FinishScreen({curPoints, maxPoints}) {
+function FinishScreen({curPoints, maxPoints, dispatch}) {
     return (
         <>
         <div className="result">
@@ -7,6 +7,7 @@ function FinishScreen({curPoints, maxPoints}) {
         <div className="highscore">
             ( HighScore : {curPoints})
         </div>
+        <button className="btn btn-ui" onClick={() => dispatch({type:"restart"})}>Restart Quiz</button>
         </>
     )
 }

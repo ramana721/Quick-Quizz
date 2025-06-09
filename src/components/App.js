@@ -10,15 +10,23 @@ import FinishScreen from "./FinishScreen";
 // import { type } from "@testing-library/user-event/dist/type";
 // import { act } from "@testing-library/react";
 
-const [LOADING, DATARECIEVED, REQUESTFAILED, ANSWERED, NEXTQUESTION, FINISHED] =
-  [
-    "loading",
-    "dataRecieved",
-    "requestFailed",
-    "answered",
-    "nextQuestion",
-    "finished",
-  ];
+const [
+  LOADING,
+  DATARECIEVED,
+  REQUESTFAILED,
+  ANSWERED,
+  NEXTQUESTION,
+  FINISHED,
+  RESTART,
+] = [
+  "loading",
+  "dataRecieved",
+  "requestFailed",
+  "answered",
+  "nextQuestion",
+  "finished",
+  "restart",
+];
 
 const initialState = {
   questions: [],
@@ -26,6 +34,7 @@ const initialState = {
   qIndex: 0,
   answer: null,
   curPoints: 0,
+  highScore: 0,
 };
 
 function reducer(state, action) {
@@ -45,7 +54,13 @@ function reducer(state, action) {
     case NEXTQUESTION:
       return { ...state, qIndex: state.qIndex + 1, answer: null };
     case FINISHED:
-      return { ...state, quizStatus: "finished" };
+      return {
+        ...state,
+        quizStatus: "finished",
+        highScore: Math.max(state.highScore, action.payLoad),
+      };
+    case RESTART:
+      return { ...initialState, highScore: state.highScore };
     default:
       throw new Error("action not recognized");
   }
@@ -74,8 +89,8 @@ function App() {
     },
     [quizStatus]
   );
-  
-  const maxPoints  = questions?.reduce((acc, ele) => ele.points + acc, 0);
+
+  const maxPoints = questions?.reduce((acc, ele) => ele.points + acc, 0);
   return (
     <div className="app">
       <Header />
@@ -93,7 +108,11 @@ function App() {
           />
         )}
         {quizStatus === "finished" && (
-          <FinishScreen curPoints={curPoints} maxPoints={maxPoints} />
+          <FinishScreen
+            curPoints={curPoints}
+            maxPoints={maxPoints}
+            dispatch={dispatch}
+          />
         )}
       </Main>
 
