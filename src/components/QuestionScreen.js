@@ -1,3 +1,5 @@
+import { useState, useEffect } from "react";
+
 function QuestionScreen({ questions, qIndex, dispatch, answer, curPoints }) {
   //   console.log(questions, "hello", qIndex);
   const question = questions[qIndex];
@@ -77,8 +79,29 @@ function Options({ option, index, dispatch, crctAnswer, answer, points }) {
 }
 
 function Footer({ answer, dispatch, qIndex, questionsLength, curPoints }) {
+  const [secondsRemaining, setSecondsRemaining] = useState(
+    questionsLength * 20
+  );
+
+  useEffect(
+    function () {
+      if (secondsRemaining <= 0) return dispatch({ type: "finished" });
+      const intervalId = setInterval(
+        () => setSecondsRemaining((s) => s - 1),
+        1000
+      );
+      // Clean up to clear the intervalId on Unmounting
+      return () => clearInterval(intervalId);
+    },
+    [secondsRemaining, dispatch]
+  );
+
+  const [min, sec] = [Math.ceil(secondsRemaining / 60), secondsRemaining % 60];
   return (
     <footer>
+      <div className="timer">
+        {min < 10 ? `0${min}` : min}:{sec < 10 ? `0${sec}` : sec}
+      </div>
       {answer !== null &&
         (qIndex !== questionsLength - 1 ? (
           <button

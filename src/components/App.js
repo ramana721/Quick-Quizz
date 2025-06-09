@@ -42,7 +42,7 @@ function reducer(state, action) {
     case LOADING:
       return { ...state, quizStatus: "loading" };
     case DATARECIEVED:
-      return { ...state, quizStatus: "active", questions: action.payLoad };
+      return { ...state, quizStatus: "started", questions: action.payLoad};
     case REQUESTFAILED:
       return { ...state, quizStatus: "error" };
     case ANSWERED:
@@ -78,7 +78,6 @@ function App() {
           fetch("../data/questions.json")
             .then((res) => res.json())
             .then((data) => {
-              console.log(data);
               dispatch({ type: DATARECIEVED, payLoad: data.questions });
             })
             .catch((e) => {
@@ -98,7 +97,7 @@ function App() {
         {quizStatus === "initial" && <StartScreen dispatch={dispatch} />}
         {quizStatus === "loading" && <Loader />}
         {quizStatus === "error" && <Error />}
-        {quizStatus === "active" && (
+        {quizStatus === "started" && (
           <QuestionScreen
             questions={questions}
             qIndex={qIndex}
